@@ -1,0 +1,11 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "atm-security",
+      "description": "Abstract security and biometric data visualization",
+      "imageUrl": "https://picsum.photos/seed/secure-atm/1200/800",
+      "imageHint": "security technology"
+    }
+  ]
+}
