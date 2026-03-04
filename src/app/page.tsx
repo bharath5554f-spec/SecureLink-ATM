@@ -27,7 +27,7 @@ export default function LoginPage() {
     if (cardNumber.length === 16 && activeField === 'card') {
       setActiveField('pin');
     }
-  }, [cardNumber]);
+  }, [cardNumber, activeField]);
 
   const handleKeypadInput = (val: string) => {
     setError('');
@@ -99,6 +99,16 @@ export default function LoginPage() {
     }, 1500);
   };
 
+  // Format card number with spaces for display
+  const formatCardNumber = (value: string) => {
+    const clean = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const parts = [];
+    for (let i = 0; i < clean.length; i += 4) {
+      parts.push(clean.substring(i, i + 4));
+    }
+    return parts.join(' ');
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       {/* Brand Header */}
@@ -142,8 +152,12 @@ export default function LoginPage() {
                       <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         id="cardNumber"
-                        value={cardNumber.replace(/(\d{4})/g, '$1 ').trim()}
-                        readOnly
+                        value={formatCardNumber(cardNumber)}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '').slice(0, 16);
+                          setCardNumber(val);
+                        }}
+                        onFocus={() => setActiveField('card')}
                         placeholder="0000 0000 0000 0000"
                         className="pl-10 h-12 bg-background border-none text-lg tracking-widest font-mono"
                       />
@@ -158,7 +172,11 @@ export default function LoginPage() {
                         id="pin"
                         type="password"
                         value={pin}
-                        readOnly
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/gi, '').slice(0, 4);
+                          setPin(val);
+                        }}
+                        onFocus={() => setActiveField('pin')}
                         placeholder="••••"
                         className="pl-10 h-12 bg-background border-none text-lg tracking-widest"
                       />
@@ -194,12 +212,16 @@ export default function LoginPage() {
             {status === 'otp_required' && (
               <form onSubmit={handleOtpVerification} className="space-y-6">
                 <div className="space-y-4">
-                  <div className="space-y-2 atm-input-focus p-1 rounded-lg" onClick={() => setActiveField('otp')}>
+                  <div className={`space-y-2 atm-input-focus p-1 rounded-lg ${activeField === 'otp' ? 'ring-1 ring-primary/30' : ''}`} onClick={() => setActiveField('otp')}>
                     <Label htmlFor="otp" className="text-xs text-muted-foreground uppercase tracking-wider ml-1 text-center block">One-Time Password</Label>
                     <Input
                       id="otp"
                       value={otp}
-                      readOnly
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/gi, '').slice(0, 6);
+                        setOtp(val);
+                      }}
+                      onFocus={() => setActiveField('otp')}
                       placeholder="000 000"
                       className="h-16 bg-background border-none text-3xl tracking-[1em] text-center font-mono placeholder:tracking-normal placeholder:text-muted/20"
                     />
